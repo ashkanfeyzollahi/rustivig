@@ -65,35 +65,39 @@ fn extract_words_impl(charset: &str, corpus: &str) -> Vec<String> {
 }
 
 #[pyfunction]
+#[pyo3(signature = (charset, word, dictionary, use_threading=false))]
 fn get_candidates(
     charset: &str,
     word: &str,
-    word_frequency_dictionary: HashMap<String, usize>,
+    dictionary: HashMap<String, usize>,
+    use_threading: bool,
 ) -> PyResult<HashSet<String>> {
     Ok(get_candidates_impl(
         charset,
         word,
-        &word_frequency_dictionary,
+        &dictionary,
+        use_threading,
     ))
 }
 
 fn get_candidates_impl(
     charset: &str,
     word: &str,
-    word_frequency_dictionary: &HashMap<String, usize>,
+    dictionary: &HashMap<String, usize>,
+    use_threading: bool,
 ) -> HashSet<String> {
     let no_edits = HashSet::from([word.to_string()]);
-    let known_no_edits = get_known_words_impl(&no_edits, word_frequency_dictionary);
+    let known_no_edits = get_known_words_impl(&no_edits, dictionary, use_threading);
     if !known_no_edits.is_empty() {
         return known_no_edits;
     }
     let known_distance_1_edits =
-        get_known_distance_1_edits_impl(charset, word, word_frequency_dictionary);
+        get_distance_1_edits_impl(charset, word, dictionary, true, use_threading);
     if !known_distance_1_edits.is_empty() {
         return known_distance_1_edits;
     }
     let known_distance_2_edits =
-        get_known_distance_2_edits_impl(charset, word, word_frequency_dictionary);
+        get_distance_2_edits_impl(charset, word, dictionary, true, use_threading);
     if !known_distance_2_edits.is_empty() {
         return known_distance_2_edits;
     }
