@@ -56,7 +56,7 @@ fn extract_words(charset: &str, corpus: &str) -> PyResult<Vec<String>> {
 }
 
 fn extract_words_impl(charset: &str, corpus: &str) -> Vec<String> {
-    let corpus: String = corpus.to_lowercase();
+    let corpus: String = corpus.to_string();
     let mut extracted_words: Vec<String> = Vec::new();
     for word in corpus.split(|c| !charset.contains(c)) {
         extracted_words.push(word.to_string());
