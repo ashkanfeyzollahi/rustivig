@@ -282,8 +282,6 @@ fn rustivig(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(get_candidates, m)?)?;
     m.add_function(wrap_pyfunction!(get_distance_1_edits, m)?)?;
     m.add_function(wrap_pyfunction!(get_distance_2_edits, m)?)?;
-    m.add_function(wrap_pyfunction!(get_known_distance_1_edits, m)?)?;
-    m.add_function(wrap_pyfunction!(get_known_distance_2_edits, m)?)?;
     m.add_function(wrap_pyfunction!(get_known_words, m)?)?;
     m.add_function(wrap_pyfunction!(get_probability, m)?)?;
     Ok(())
