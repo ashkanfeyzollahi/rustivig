@@ -12,15 +12,15 @@ fn build_word_frequency_dictionary(
 }
 
 fn build_word_frequency_dictionary_impl(charset: &str, corpus: &str) -> HashMap<String, usize> {
-    let mut word_frequency_dictionary: HashMap<String, usize> = HashMap::new();
+    let mut dictionary: HashMap<String, usize> = HashMap::new();
     let extracted_words = extract_words_impl(charset, corpus);
     for word in extracted_words.iter() {
-        word_frequency_dictionary
+        dictionary
             .entry(word.clone())
             .and_modify(|f| *f += 1)
             .or_insert(1);
     }
-    word_frequency_dictionary
+    dictionary
 }
 
 #[pyfunction]
