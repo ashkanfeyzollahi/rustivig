@@ -24,24 +24,26 @@ fn build_word_frequency_dictionary_impl(charset: &str, corpus: &str) -> HashMap<
 }
 
 #[pyfunction]
+#[pyo3(signature = (charset, word, dictionary, use_threading=false))]
 fn correct(
     charset: &str,
     word: &str,
-    word_frequency_dictionary: HashMap<String, usize>,
+    dictionary: HashMap<String, usize>,
+    use_threading: bool,
 ) -> PyResult<String> {
-    Ok(correct_impl(charset, word, &word_frequency_dictionary))
+    Ok(correct_impl(charset, word, &dictionary, use_threading))
 }
 
 fn correct_impl(
     charset: &str,
     word: &str,
-    word_frequency_dictionary: &HashMap<String, usize>,
+    dictionary: &HashMap<String, usize>,
+    use_threading: bool,
 ) -> String {
-    match get_candidates_impl(charset, word, word_frequency_dictionary)
+    match get_candidates_impl(charset, word, dictionary, use_threading)
         .iter()
         .max_by(|x, y| {
-            get_probability_impl(x, word_frequency_dictionary)
-                .total_cmp(&get_probability_impl(y, word_frequency_dictionary))
+            get_probability_impl(x, dictionary).total_cmp(&get_probability_impl(y, dictionary))
         }) {
         Some(word) => word.clone(),
         None => word.to_string(),
