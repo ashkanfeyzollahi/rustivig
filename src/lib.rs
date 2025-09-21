@@ -234,20 +234,30 @@ fn get_distance_2_edits_impl(
 }
 
 #[pyfunction]
+#[pyo3(signature = (words, dictionary, use_threading=false))]
 fn get_known_words(
     words: HashSet<String>,
-    word_frequency_dictionary: HashMap<String, usize>,
+    dictionary: HashMap<String, usize>,
+    use_threading: bool,
 ) -> PyResult<HashSet<String>> {
-    Ok(get_known_words_impl(&words, &word_frequency_dictionary))
+    Ok(get_known_words_impl(&words, &dictionary, use_threading))
 }
 
 fn get_known_words_impl(
     words: &HashSet<String>,
-    word_frequency_dictionary: &HashMap<String, usize>,
+    dictionary: &HashMap<String, usize>,
+    use_threading: bool,
 ) -> HashSet<String> {
+    if use_threading {
+        return words
+            .par_iter()
+            .filter(|word| dictionary.contains_key(*word))
+            .map(|word| word.clone())
+            .collect();
+    }
     words
         .iter()
-        .filter(|word| word_frequency_dictionary.contains_key(*word))
+        .filter(|word| dictionary.contains_key(*word))
         .map(|word| word.clone())
         .collect()
 }
