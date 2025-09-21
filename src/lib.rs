@@ -105,91 +105,92 @@ fn get_candidates_impl(
 }
 
 #[pyfunction]
-fn get_distance_1_edits(charset: &str, word: &str) -> PyResult<HashSet<String>> {
-    Ok(get_distance_1_edits_impl(charset, word))
-}
-
-fn get_distance_1_edits_impl(charset: &str, word: &str) -> HashSet<String> {
-    let splits: Vec<_> = (0..=word.len()).map(|i| word.split_at(i)).collect();
-    splits
-        .iter()
-        .filter(|(_, r)| !r.is_empty())
-        .map(|(l, r)| format!("{}{}", l, &r[1..]))
-        .chain(
-            splits
-                .iter()
-                .filter(|(_, r)| r.len() >= 2)
-                .map(|(l, r)| format!("{}{}{}{}", l, &r[1..2], &r[0..1], &r[2..])),
-        )
-        .chain(charset.chars().flat_map(|c| {
-            splits
-                .iter()
-                .filter(move |(_, r)| !r.is_empty())
-                .map(move |(l, r)| format!("{}{}{}", l, c, &r[1..]))
-        }))
-        .chain(
-            charset
-                .chars()
-                .flat_map(|c| splits.iter().map(move |(l, r)| format!("{}{}{}", l, c, r))),
-        )
-        .collect()
-}
-
-#[pyfunction]
-fn get_distance_2_edits(charset: &str, word: &str) -> PyResult<HashSet<String>> {
-    Ok(get_distance_2_edits_impl(charset, word))
-}
-
-fn get_distance_2_edits_impl(charset: &str, word: &str) -> HashSet<String> {
-    get_distance_1_edits_impl(charset, word)
-        .iter()
-        .flat_map(|e1| get_distance_1_edits_impl(charset, e1))
-        .collect()
-}
-
-#[pyfunction]
-fn get_known_distance_1_edits(
+#[pyo3(signature = (charset, word, dictionary, filter_known=false, use_threading=false))]
+fn get_distance_1_edits(
     charset: &str,
     word: &str,
-    word_frequency_dictionary: HashMap<String, usize>,
+    dictionary: HashMap<String, usize>,
+    filter_known: bool,
+    use_threading: bool,
 ) -> PyResult<HashSet<String>> {
-    Ok(get_known_distance_1_edits_impl(
+    Ok(get_distance_1_edits_impl(
         charset,
         word,
-        &word_frequency_dictionary,
+        &dictionary,
+        filter_known,
+        use_threading,
     ))
 }
 
-fn get_known_distance_1_edits_impl(
+fn get_distance_1_edits_impl(
     charset: &str,
     word: &str,
-    word_frequency_dictionary: &HashMap<String, usize>,
+    dictionary: &HashMap<String, usize>,
+    filter_known: bool,
+    use_threading: bool,
 ) -> HashSet<String> {
     let splits: Vec<_> = (0..=word.len()).map(|i| word.split_at(i)).collect();
+    if use_threading {
+        return splits
+            .par_iter()
+            .filter(|(_, r)| !r.is_empty())
+            .map(|(l, r)| format!("{}{}", l, &r[1..]))
+            .filter(|candidate| !filter_known || dictionary.contains_key(candidate))
+            .chain(
+                splits
+                    .par_iter()
+                    .filter(|(_, r)| r.len() >= 2)
+                    .map(|(l, r)| format!("{}{}{}{}", l, &r[1..2], &r[0..1], &r[2..]))
+                    .filter(|candidate| !filter_known || dictionary.contains_key(candidate)),
+            )
+            .chain({
+                charset.par_chars().flat_map(|c| {
+                    splits
+                        .par_iter()
+                        .filter(move |(_, r)| !r.is_empty())
+                        .map(move |(l, r)| format!("{}{}{}", l, c, &r[1..]))
+                        .filter(|candidate| !filter_known || dictionary.contains_key(candidate))
+                })
+            })
+            .chain(
+                charset
+                    .par_chars()
+                    .flat_map(|c| {
+                        splits
+                            .par_iter()
+                            .with_max_len(if use_threading { usize::MAX } else { 1 })
+                            .map(move |(l, r)| format!("{}{}{}", l, c, r))
+                    })
+                    .filter(|candidate| !filter_known || dictionary.contains_key(candidate)),
+            )
+            .collect();
+    }
     splits
         .iter()
         .filter(|(_, r)| !r.is_empty())
         .map(|(l, r)| format!("{}{}", l, &r[1..]))
-        .filter(|candidate| word_frequency_dictionary.contains_key(candidate))
+        .filter(|candidate| !filter_known || dictionary.contains_key(candidate))
         .chain(
             splits
                 .iter()
                 .filter(|(_, r)| r.len() >= 2)
                 .map(|(l, r)| format!("{}{}{}{}", l, &r[1..2], &r[0..1], &r[2..]))
-                .filter(|candidate| word_frequency_dictionary.contains_key(candidate)),
+                .filter(|candidate| !filter_known || dictionary.contains_key(candidate)),
         )
-        .chain(charset.chars().flat_map(|c| {
-            splits
-                .iter()
-                .filter(move |(_, r)| !r.is_empty())
-                .map(move |(l, r)| format!("{}{}{}", l, c, &r[1..]))
-                .filter(|candidate| word_frequency_dictionary.contains_key(candidate))
-        }))
+        .chain({
+            charset.chars().flat_map(|c| {
+                splits
+                    .iter()
+                    .filter(move |(_, r)| !r.is_empty())
+                    .map(move |(l, r)| format!("{}{}{}", l, c, &r[1..]))
+                    .filter(|candidate| !filter_known || dictionary.contains_key(candidate))
+            })
+        })
         .chain(
             charset
                 .chars()
                 .flat_map(|c| splits.iter().map(move |(l, r)| format!("{}{}{}", l, c, r)))
-                .filter(|candidate| word_frequency_dictionary.contains_key(candidate)),
+                .filter(|candidate| !filter_known || dictionary.contains_key(candidate)),
         )
         .collect()
 }
