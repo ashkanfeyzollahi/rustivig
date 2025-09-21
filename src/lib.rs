@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use pyo3::prelude::*;
+use rayon::prelude::*;
 
 #[pyfunction]
 fn build_word_frequency_dictionary(
