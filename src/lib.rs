@@ -196,27 +196,40 @@ fn get_distance_1_edits_impl(
 }
 
 #[pyfunction]
-fn get_known_distance_2_edits(
+#[pyo3(signature = (charset, word, dictionary, filter_known=false, use_threading=false))]
+fn get_distance_2_edits(
     charset: &str,
     word: &str,
-    word_frequency_dictionary: HashMap<String, usize>,
+    dictionary: HashMap<String, usize>,
+    filter_known: bool,
+    use_threading: bool,
 ) -> PyResult<HashSet<String>> {
-    Ok(get_known_distance_2_edits_impl(
+    Ok(get_distance_2_edits_impl(
         charset,
         word,
-        &word_frequency_dictionary,
+        &dictionary,
+        filter_known,
+        use_threading,
     ))
 }
 
-fn get_known_distance_2_edits_impl(
+fn get_distance_2_edits_impl(
     charset: &str,
     word: &str,
-    word_frequency_dictionary: &HashMap<String, usize>,
+    dictionary: &HashMap<String, usize>,
+    filter_known: bool,
+    use_threading: bool,
 ) -> HashSet<String> {
-    get_distance_1_edits_impl(charset, word)
+    let empty_dictionary: HashMap<String, usize> = HashMap::new();
+    if use_threading {
+        return get_distance_1_edits_impl(charset, word, &empty_dictionary, false, true)
+            .par_iter()
+            .flat_map(|e1| get_distance_1_edits_impl(charset, e1, dictionary, filter_known, true))
+            .collect();
+    }
+    get_distance_1_edits_impl(charset, word, &empty_dictionary, false, false)
         .iter()
-        .flat_map(|e1| get_distance_1_edits_impl(charset, e1))
-        .filter(|e2| word_frequency_dictionary.contains_key(e2))
+        .flat_map(|e1| get_distance_1_edits_impl(charset, e1, dictionary, filter_known, false))
         .collect()
 }
 
