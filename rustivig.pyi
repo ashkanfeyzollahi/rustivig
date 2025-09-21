@@ -4,7 +4,6 @@ A Rust implementation of Peter Norvig's spell corrector algorithm for use in Pyt
 
 from typing import Dict, List, Set
 
-
 def build_word_frequency_dictionary(charset: str, corpus: str) -> Dict[str, int]:
     """Extract and build a word frequency dictionary from the given corpus
 
@@ -17,19 +16,22 @@ def build_word_frequency_dictionary(charset: str, corpus: str) -> Dict[str, int]
     :rtype: Dict[str, int]
     """
 
-
-def correct(charset: str, word: str, word_frequency_dictionary: Dict[str, int]) -> str:
+def correct(
+    charset: str, word: str, dictionary: Dict[str, int], use_threading: bool = False
+) -> str:
     """Correct the potential misspelled word
 
     :param charset: A charset that what are words made of
     :type charset: str
     :param word: A potential misspelled word
     :type word: str
-    :param word_frequency_dictionary: A dictionary of `word: frequency` pairs
-    :type word_frequency_dictionary: Dict[str, int]
+    :param dictionary: A dictionary of `word: frequency` pairs
+    :type dictionary: Dict[str, int]
+    :param use_threading: An option for using threading, defaults to False
+    :type use_threading: bool, optional
     :return: Potential corrected word
+    :rtype: str
     """
-
 
 def extract_words(charset: str, corpus: str) -> List[str]:
     """Extract the words from the given corpus
@@ -43,8 +45,12 @@ def extract_words(charset: str, corpus: str) -> List[str]:
     :rtype: List[str]
     """
 
-
-def get_candidates(charset: str, word: str, word_frequency_dictionary: Dict[str, int]) -> Set[str]:
+def get_candidates(
+    charset: str,
+    word: str,
+    word_frequency_dictionary: Dict[str, int],
+    use_threading: bool = False,
+) -> Set[str]:
     """Find the similiar words to the `word` that is correctly spelled
 
     :param charset: A charset that what are words made of
@@ -53,74 +59,64 @@ def get_candidates(charset: str, word: str, word_frequency_dictionary: Dict[str,
     :type word: str
     :param word_frequency_dictionary: A dictionary of `word: frequency` pairs
     :type word_frequency_dictionary: Dict[str, int]
+    :param use_threading: An option for using threading, defaults to False
+    :type use_threading: bool, optional
     :return: A set of similiar words to the `word` that is correctly spelled
     :rtype: Set[str]
     """
 
-
-def get_distance_1_edits(charset: str, word: str) -> Set[str]:
+def get_distance_1_edits(
+    charset: str, word: str, filter_known: bool = False, use_threading: bool = False
+) -> Set[str]:
     """Get a set of distance 1 edits of a word
 
     :param charset: A charset that what are words made of
     :type charset: str
     :param word: A word
     :type word: str
+    :param filter_known: An option for filtering known words while generating edits,
+        an optimization for reducing memory usage and runtime. defaults to False
+    :type filter_known: bool, optional
+    :param use_threading: An option for using threading, defaults to False
+    :type use_threading: bool, optional
     :return: A set of distance 1 edits of the given word
     :rtype: Set[str]
     """
 
-
-def get_distance_2_edits(charset: str, word: str) -> Set[str]:
+def get_distance_2_edits(
+    charset: str, word: str, filter_known: bool = False, use_threading: bool = False
+) -> Set[str]:
     """Get a set of distance 2 edits of a word
 
     :param charset: A charset that what are words made of
     :type charset: str
     :param word: A word
     :type word: str
+    :param filter_known: An option for filtering known words while generating edits,
+        an optimization for reducing memory usage and runtime. defaults to False
+    :type filter_known: bool, optional
+    :param use_threading: An option for using threading, defaults to False
+    :type use_threading: bool, optional
     :return: A set of distance 2 edits of the given word
     :rtype: Set[str]
     """
 
-
-def get_known_distance_1_edits(charset: str, word: str, word_frequency_dictionary: Dict[str, int]) -> Set[str]:
-    """Get a set of known distance 1 edits of a word
-
-    :param charset: A charset that what are words made of
-    :type charset: str
-    :param word: A word
-    :type word: str
-    :param word_frequency_dictionary: A dictionary of `word: frequency` pairs
-    :type word_frequency_dictionary: Dict[str, int]
-    :return: A set of known distance 1 edits of the given word
-    :rtype: Set[str]
-    """
-
-
-def get_known_distance_2_edits(charset: str, word: str, word_frequency_dictionary: Dict[str, int]) -> Set[str]:
-    """Get a set of known distance 2 edits of a word
-
-    :param charset: A charset that what are words made of
-    :type charset: str
-    :param word: A word
-    :type word: str
-    :param word_frequency_dictionary: A dictionary of `word: frequency` pairs
-    :type word_frequency_dictionary: Dict[str, int]
-    :return: A set of known distance 2 edits of the given word
-    :rtype: Set[str]
-    """
-
-
-def get_known_words(words: Set[str], word_frequency_dictionary: Dict[str, int]) -> Set[str]:
+def get_known_words(
+    words: Set[str],
+    word_frequency_dictionary: Dict[str, int],
+    use_threading: bool = False,
+) -> Set[str]:
     """Select a set of known words from the `words` set
 
     :param words: A set of words
     :type words: Set[str]
     :param word_frequency_dictionary: A dictionary of `word: frequency` pairs
     :type word_frequency_dictionary: Dict[str, int]
+    :param use_threading: An option for using threading, defaults to False
+    :type use_threading: bool, optional
     :return: A set of known words selected from the `words` set
     :rtype: Set[str]
     """
-
 
 def get_probability(word: str, word_frequency_dictionary: Dict[str, int]) -> float:
     """Get probability of a word based on the given word frequency dictionary.
