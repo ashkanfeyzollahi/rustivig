@@ -71,7 +71,7 @@ en_charset = string.ascii_lowercase
 with open("big_en.txt") as f:
     corpus = f.read().lower()
 
-en_word_frequency_dictionary = rustivig.build_word_frequency_dictionary(corpus)
+en_word_frequency_dictionary = rustivig.build_word_frequency_dictionary(en_charset, corpus)
 
 with open("en_word_frequency_dictionary.json", "w") as f:
     json.dump(f, en_word_frequency_dictionary)
