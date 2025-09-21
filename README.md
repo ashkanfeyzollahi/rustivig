@@ -11,7 +11,7 @@
 </p>
 
 **rustivig** is a Rust implementation of Peter Norvig's spell corrector algorithm for use in Python.
-It is faster than the pure Python implementation `pyspellchecker` in some cases but slower in others due to PyO3's expensive type conversion - delivers 18x speedups on complex corrections but can be slower on simple cases where pyspellchecker hits optimized fast paths. Open sourced this hoping people will
+It is faster than the pure Python implementation `pyspellchecker` in some cases but slower in others due to PyO3's expensive type conversion - delivers 46.5x speedups on complex corrections but can be slower on simple cases where pyspellchecker hits optimized fast paths. Open sourced this hoping people will
 contribute and optimize this implementation much more and make it fastest spell checker based on
 Peter Norvig's spell checking algorithm.
 
