@@ -263,15 +263,13 @@ fn get_known_words_impl(
 }
 
 #[pyfunction]
-fn get_probability(word: &str, word_frequency_dictionary: HashMap<String, usize>) -> PyResult<f32> {
-    Ok(get_probability_impl(word, &word_frequency_dictionary))
+fn get_probability(word: &str, dictionary: HashMap<String, usize>) -> PyResult<f32> {
+    Ok(get_probability_impl(word, &dictionary))
 }
 
-fn get_probability_impl(word: &str, word_frequency_dictionary: &HashMap<String, usize>) -> f32 {
-    match word_frequency_dictionary.get(word) {
-        Some(frequency) => {
-            *frequency as f32 / word_frequency_dictionary.values().sum::<usize>() as f32
-        }
+fn get_probability_impl(word: &str, dictionary: &HashMap<String, usize>) -> f32 {
+    match dictionary.get(word) {
+        Some(frequency) => *frequency as f32 / dictionary.values().sum::<usize>() as f32,
         None => 0.0,
     }
 }
