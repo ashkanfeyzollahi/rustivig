@@ -2,6 +2,7 @@
 
 <p align="center">
     <em>🧙 A Rust implementation of Peter Norvig's spell corrector algorithm for use in Python</em>
+    <br>
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/ashkanfeyzollahi/rustivig">
     <img alt="GitHub License" src="https://img.shields.io/github/license/ashkanfeyzollahi/rustivig">
     <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/rustivig">
