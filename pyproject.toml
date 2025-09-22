@@ -16,7 +16,7 @@ requires-python = ">=3.8"
 dynamic = ["version"]
 
 [project.optional-dependencies]
-dev = ["ruff", "pytest", "pytest-benchmark"]
+dev = ["ruff", "pytest", "pyspellchecker"]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
