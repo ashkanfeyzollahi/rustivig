@@ -129,7 +129,10 @@ fn get_distance_1_edits_impl(
     filter_known: bool,
     use_threading: bool,
 ) -> HashSet<String> {
-    let splits: Vec<_> = (0..=word.len()).map(|i| word.split_at(i)).collect();
+    let word_chars_vec: Vec<char> = word.chars().collect();
+    let splits: Vec<_> = (0..=word_chars_vec.len())
+        .map(|i| word.split_at(i))
+        .collect();
     if use_threading {
         return splits
             .par_iter()
@@ -140,7 +143,19 @@ fn get_distance_1_edits_impl(
                 splits
                     .par_iter()
                     .filter(|(_, r)| r.len() >= 2)
-                    .map(|(l, r)| format!("{}{}{}{}", l, &r[1..2], &r[0..1], &r[2..]))
+                    .map(|(l, r)| {
+                        let r_chars: Vec<char> = r.chars().collect();
+                        format!(
+                            "{}{}{}{}",
+                            l,
+                            &r_chars.get(1).unwrap(),
+                            &r_chars.get(0).unwrap(),
+                            {
+                                let r_skip_2: String = r.chars().skip(2).collect();
+                                r_skip_2
+                            }
+                        )
+                    })
                     .filter(|candidate| !filter_known || dictionary.contains_key(candidate)),
             )
             .chain({
@@ -148,7 +163,12 @@ fn get_distance_1_edits_impl(
                     splits
                         .par_iter()
                         .filter(move |(_, r)| !r.is_empty())
-                        .map(move |(l, r)| format!("{}{}{}", l, c, &r[1..]))
+                        .map(move |(l, r)| {
+                            format!("{}{}{}", l, c, {
+                                let r_skip_2: String = r.chars().skip(1).collect();
+                                r_skip_2
+                            })
+                        })
                         .filter(|candidate| !filter_known || dictionary.contains_key(candidate))
                 })
             })
@@ -158,7 +178,6 @@ fn get_distance_1_edits_impl(
                     .flat_map(|c| {
                         splits
                             .par_iter()
-                            .with_max_len(if use_threading { usize::MAX } else { 1 })
                             .map(move |(l, r)| format!("{}{}{}", l, c, r))
                     })
                     .filter(|candidate| !filter_known || dictionary.contains_key(candidate)),
@@ -174,7 +193,19 @@ fn get_distance_1_edits_impl(
             splits
                 .iter()
                 .filter(|(_, r)| r.len() >= 2)
-                .map(|(l, r)| format!("{}{}{}{}", l, &r[1..2], &r[0..1], &r[2..]))
+                .map(|(l, r)| {
+                    let r_chars: Vec<char> = r.chars().collect();
+                    format!(
+                        "{}{}{}{}",
+                        l,
+                        &r_chars.get(1).unwrap(),
+                        &r_chars.get(0).unwrap(),
+                        {
+                            let r_skip_2: String = r.chars().skip(2).collect();
+                            r_skip_2
+                        }
+                    )
+                })
                 .filter(|candidate| !filter_known || dictionary.contains_key(candidate)),
         )
         .chain({
@@ -182,7 +213,12 @@ fn get_distance_1_edits_impl(
                 splits
                     .iter()
                     .filter(move |(_, r)| !r.is_empty())
-                    .map(move |(l, r)| format!("{}{}{}", l, c, &r[1..]))
+                    .map(move |(l, r)| {
+                        format!("{}{}{}", l, c, {
+                            let r_skip_2: String = r.chars().skip(1).collect();
+                            r_skip_2
+                        })
+                    })
                     .filter(|candidate| !filter_known || dictionary.contains_key(candidate))
             })
         })
