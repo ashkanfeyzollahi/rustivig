@@ -1,3 +1,23 @@
+## [0.4.2] - 2025-09-22
+
+### 🚀 Features
+
+- Add functions for batch processing
+- *(api)* Add batch processing APIs and update docstrings
+
+### 💼 Other
+
+- Bump minor version and update lock
+
+### 📚 Documentation
+
+- Update README.md
+
+### 🧪 Testing
+
+- Remove pytest-benchmark and add pyspellchecker for benchmarking
+- Remove test suites
+- Add a whole test suite for rustivig
 ## [0.3.2] - 2025-09-22
 
 ### 🐛 Bug Fixes
@@ -10,6 +30,7 @@
 
 ### 📚 Documentation
 
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 ## [0.3.1] - 2025-09-22
