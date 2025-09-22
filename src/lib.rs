@@ -51,6 +51,38 @@ fn correct_impl(
 }
 
 #[pyfunction]
+#[pyo3(signature = (charset, words, dictionary, use_threading=false))]
+fn correct_batch(
+    charset: &str,
+    words: HashSet<String>,
+    dictionary: HashMap<String, usize>,
+    use_threading: bool,
+) -> PyResult<HashMap<String, String>> {
+    Ok(correct_batch_impl(
+        charset,
+        &words,
+        &dictionary,
+        use_threading,
+    ))
+}
+
+fn correct_batch_impl(
+    charset: &str,
+    words: &HashSet<String>,
+    dictionary: &HashMap<String, usize>,
+    use_threading: bool,
+) -> HashMap<String, String> {
+    let mut correction_batch: HashMap<String, String> = HashMap::new();
+    for word in words.iter() {
+        correction_batch.insert(
+            word.clone(),
+            correct_impl(charset, word, dictionary, use_threading),
+        );
+    }
+    correction_batch
+}
+
+#[pyfunction]
 fn extract_words(charset: &str, corpus: &str) -> PyResult<Vec<String>> {
     Ok(extract_words_impl(charset, corpus))
 }
@@ -102,6 +134,38 @@ fn get_candidates_impl(
         return known_distance_2_edits;
     }
     no_edits
+}
+
+#[pyfunction]
+#[pyo3(signature = (charset, words, dictionary, use_threading=false))]
+fn get_candidates_batch(
+    charset: &str,
+    words: HashSet<String>,
+    dictionary: HashMap<String, usize>,
+    use_threading: bool,
+) -> PyResult<HashMap<String, HashSet<String>>> {
+    Ok(get_candidates_batch_impl(
+        charset,
+        &words,
+        &dictionary,
+        use_threading,
+    ))
+}
+
+fn get_candidates_batch_impl(
+    charset: &str,
+    words: &HashSet<String>,
+    dictionary: &HashMap<String, usize>,
+    use_threading: bool,
+) -> HashMap<String, HashSet<String>> {
+    let mut candidates_batch: HashMap<String, HashSet<String>> = HashMap::new();
+    for word in words.iter() {
+        candidates_batch.insert(
+            word.clone(),
+            get_candidates_impl(charset, word, dictionary, use_threading),
+        );
+    }
+    candidates_batch
 }
 
 #[pyfunction]
@@ -305,8 +369,10 @@ fn get_probability_impl(word: &str, dictionary: &HashMap<String, usize>) -> f32 
 fn rustivig(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(build_word_frequency_dictionary, m)?)?;
     m.add_function(wrap_pyfunction!(correct, m)?)?;
+    m.add_function(wrap_pyfunction!(correct_batch, m)?)?;
     m.add_function(wrap_pyfunction!(extract_words, m)?)?;
     m.add_function(wrap_pyfunction!(get_candidates, m)?)?;
+    m.add_function(wrap_pyfunction!(get_candidates_batch, m)?)?;
     m.add_function(wrap_pyfunction!(get_distance_1_edits, m)?)?;
     m.add_function(wrap_pyfunction!(get_distance_2_edits, m)?)?;
     m.add_function(wrap_pyfunction!(get_known_words, m)?)?;
