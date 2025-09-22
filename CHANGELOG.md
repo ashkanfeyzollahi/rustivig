@@ -1,3 +1,21 @@
+## [0.3.1] - 2025-09-22
+
+### 🐛 Bug Fixes
+
+- *(lib)* Fix broken unicode support
+
+### 💼 Other
+
+- Bump minor version and update lock
+
+### 📚 Documentation
+
+- Update CHANGELOG.md
+- Remove performance section
+
+### 🧪 Testing
+
+- *(unicode)* Make unicode test suite proper
 ## [0.3.0] - 2025-09-22
 
 ### 🚀 Features
@@ -10,6 +28,7 @@
 
 ### 📚 Documentation
 
+- Change HEAD to 0.2.0
 - Fix a mistake in Usage section
 - Add performance section
 - Fix a mistake
@@ -59,7 +78,7 @@
 
 - Add .ruff_cache to .gitignore
 - *(types)* Update .pyi file for API changes
-## [0.1.0] - 2025-09-22
+## [0.1.0] - 2025-09-20
 
 ### ⚙️ Miscellaneous Tasks
 
