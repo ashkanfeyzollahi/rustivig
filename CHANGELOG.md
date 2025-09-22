@@ -1,4 +1,27 @@
-## [0.1.0..0.2.0] - 2025-09-21
+## [0.3.0] - 2025-09-22
+
+### 🚀 Features
+
+- Add unicode support
+
+### 💼 Other
+
+- Bump minor version and update lock
+
+### 📚 Documentation
+
+- Fix a mistake in Usage section
+- Add performance section
+- Fix a mistake
+
+### 🧪 Testing
+
+- Add unicode support tests
+
+### ⚙️ Miscellaneous Tasks
+
+- Add .benchmarks to .gitignore
+## [0.2.0] - 2025-09-21
 
 ### 🚀 Features
 
@@ -23,6 +46,11 @@
 - Rename word_frequency_dictionary to dictionary
 - Rename word_frequency_dictionary to dictionary
 
+### 📚 Documentation
+
+- Add CHANGELOG.md
+- Add line break to README.md
+
 ### 🧪 Testing
 
 - Add initial test suite
@@ -31,3 +59,8 @@
 
 - Add .ruff_cache to .gitignore
 - *(types)* Update .pyi file for API changes
+## [0.1.0] - 2025-09-22
+
+### ⚙️ Miscellaneous Tasks
+
+- Init
