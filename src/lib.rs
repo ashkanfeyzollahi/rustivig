@@ -142,7 +142,6 @@ fn get_distance_1_edits_impl(
         .map(|i| word.char_indices().nth(i).unwrap().0)
         .map(|i| word.split_at(i))
         .collect();
-    dbg!(&splits);
     if use_threading {
         return splits
             .par_iter()
