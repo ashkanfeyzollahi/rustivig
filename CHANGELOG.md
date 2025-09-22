@@ -1,3 +1,17 @@
+## [unreleased]
+
+### 💼 Other
+
+- Bump minor version and update lock
+## [0.3.2] - 2025-09-22
+
+### 🐛 Bug Fixes
+
+- *(release)* Remove forgotten dbg macro
+
+### 📚 Documentation
+
+- Update CHANGELOG.md
 ## [0.3.1] - 2025-09-22
 
 ### 🐛 Bug Fixes
