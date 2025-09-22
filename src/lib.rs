@@ -122,6 +122,14 @@ fn get_distance_1_edits(
     ))
 }
 
+fn get_nth_char(s: &str, n: usize) -> char {
+    s.chars().nth(n).unwrap()
+}
+
+fn skip_n_and_get_rest(s: &str, n: usize) -> String {
+    s.chars().skip(n).collect()
+}
+
 fn get_distance_1_edits_impl(
     charset: &str,
     word: &str,
@@ -129,31 +137,29 @@ fn get_distance_1_edits_impl(
     filter_known: bool,
     use_threading: bool,
 ) -> HashSet<String> {
-    let word_chars_vec: Vec<char> = word.chars().collect();
-    let splits: Vec<_> = (0..=word_chars_vec.len())
+    let word_chars = word.chars();
+    let splits: Vec<_> = (0..word_chars.count())
+        .map(|i| word.char_indices().nth(i).unwrap().0)
         .map(|i| word.split_at(i))
         .collect();
+    dbg!(&splits);
     if use_threading {
         return splits
             .par_iter()
             .filter(|(_, r)| !r.is_empty())
-            .map(|(l, r)| format!("{}{}", l, &r[1..]))
+            .map(|(l, r)| format!("{}{}", l, skip_n_and_get_rest(r, 1)))
             .filter(|candidate| !filter_known || dictionary.contains_key(candidate))
             .chain(
                 splits
                     .par_iter()
-                    .filter(|(_, r)| r.len() >= 2)
+                    .filter(|(_, r)| r.chars().count() >= 2)
                     .map(|(l, r)| {
-                        let r_chars: Vec<char> = r.chars().collect();
                         format!(
                             "{}{}{}{}",
                             l,
-                            &r_chars.get(1).unwrap(),
-                            &r_chars.get(0).unwrap(),
-                            {
-                                let r_skip_2: String = r.chars().skip(2).collect();
-                                r_skip_2
-                            }
+                            get_nth_char(r, 1),
+                            get_nth_char(r, 0),
+                            skip_n_and_get_rest(r, 2)
                         )
                     })
                     .filter(|candidate| !filter_known || dictionary.contains_key(candidate)),
@@ -163,12 +169,7 @@ fn get_distance_1_edits_impl(
                     splits
                         .par_iter()
                         .filter(move |(_, r)| !r.is_empty())
-                        .map(move |(l, r)| {
-                            format!("{}{}{}", l, c, {
-                                let r_skip_2: String = r.chars().skip(1).collect();
-                                r_skip_2
-                            })
-                        })
+                        .map(move |(l, r)| format!("{}{}{}", l, c, skip_n_and_get_rest(r, 1)))
                         .filter(|candidate| !filter_known || dictionary.contains_key(candidate))
                 })
             })
@@ -187,23 +188,19 @@ fn get_distance_1_edits_impl(
     splits
         .iter()
         .filter(|(_, r)| !r.is_empty())
-        .map(|(l, r)| format!("{}{}", l, &r[1..]))
+        .map(|(l, r)| format!("{}{}", l, skip_n_and_get_rest(r, 1)))
         .filter(|candidate| !filter_known || dictionary.contains_key(candidate))
         .chain(
             splits
                 .iter()
-                .filter(|(_, r)| r.len() >= 2)
+                .filter(|(_, r)| r.chars().count() >= 2)
                 .map(|(l, r)| {
-                    let r_chars: Vec<char> = r.chars().collect();
                     format!(
                         "{}{}{}{}",
                         l,
-                        &r_chars.get(1).unwrap(),
-                        &r_chars.get(0).unwrap(),
-                        {
-                            let r_skip_2: String = r.chars().skip(2).collect();
-                            r_skip_2
-                        }
+                        get_nth_char(r, 1),
+                        get_nth_char(r, 0),
+                        skip_n_and_get_rest(r, 2)
                     )
                 })
                 .filter(|candidate| !filter_known || dictionary.contains_key(candidate)),
@@ -213,12 +210,7 @@ fn get_distance_1_edits_impl(
                 splits
                     .iter()
                     .filter(move |(_, r)| !r.is_empty())
-                    .map(move |(l, r)| {
-                        format!("{}{}{}", l, c, {
-                            let r_skip_2: String = r.chars().skip(1).collect();
-                            r_skip_2
-                        })
-                    })
+                    .map(move |(l, r)| format!("{}{}{}", l, c, skip_n_and_get_rest(r, 1)))
                     .filter(|candidate| !filter_known || dictionary.contains_key(candidate))
             })
         })
