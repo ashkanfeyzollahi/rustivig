@@ -73,3 +73,6 @@ docs/_build/
 
 # Ruff cache
 .ruff_cache
+
+# .benchmarks
+.benchmarks
